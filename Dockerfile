@@ -1,32 +1,31 @@
-# Use official slim Python base
+# Use slim Python base
 FROM python:3.10-slim
 
-# Avoid interactive prompts
+# Prevent prompts
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install dependencies & system Chrome + Chromedriver
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    wget unzip curl gnupg ca-certificates fonts-liberation \
-    libnss3 libxss1 libasound2 libatk1.0-0 libgtk-3-0 libx11-xcb1 \
-    chromium chromium-driver && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    wget curl unzip gnupg ca-certificates \
+    chromium chromium-driver \
+    fonts-liberation \
+    && rm -rf /var/lib/apt/lists/*
 
-# Set environment variables for undetected-chromedriver
+# Set environment variables for Chrome
 ENV CHROME_BIN=/usr/bin/chromium
 ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
 
-# Set working directory
+# Create app directory
 WORKDIR /app
 
-# Copy project files
+# Copy app files
 COPY . .
 
-# Install Python dependencies
-RUN pip install --upgrade pip && pip install -r requirements.txt
+# Install Python packages
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose port used by Flask
+# Expose port
 EXPOSE 10000
 
-# Start the Flask app
-CMD ["python", "app.py"]
+# Start with Gunicorn, increase timeout to 600s to avoid timeout errors
+CMD ["gunicorn", "app:app", "--workers=1", "--timeout=600", "--bind=0.0.0.0:10000"]
