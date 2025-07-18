@@ -1,39 +1,32 @@
+# Use official slim Python base
 FROM python:3.10-slim
 
+# Avoid interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Install dependencies & system Chrome + Chromedriver
 RUN apt-get update && apt-get install -y \
-    wget \
-    curl \
-    unzip \
-    gnupg \
-    ca-certificates \
-    fonts-liberation \
-    libnss3 \
-    libatk1.0-0 \
-    libatk-bridge2.0-0 \
-    libdrm2 \
-    libxss1 \
-    libasound2 \
-    libgbm1 \
-    libxshmfence1 \
-    libxdamage1 \
-    libxrandr2 \
-    libgtk-3-0 \
-    && rm -rf /var/lib/apt/lists/*
+    wget unzip curl gnupg ca-certificates fonts-liberation \
+    libnss3 libxss1 libasound2 libatk1.0-0 libgtk-3-0 libx11-xcb1 \
+    chromium chromium-driver && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-chrome.gpg \
-    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
-    && apt-get update \
-    && apt-get install -y google-chrome-stable \
-    && rm -rf /var/lib/apt/lists/*
+# Set environment variables for undetected-chromedriver
+ENV CHROME_BIN=/usr/bin/chromium
+ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
 
+# Set working directory
 WORKDIR /app
-COPY . /app
 
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy project files
+COPY . .
 
+# Install Python dependencies
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+# Expose port used by Flask
 EXPOSE 10000
 
-
-CMD ["bash", "start.sh"]
+# Start the Flask app
+CMD ["python", "app.py"]
