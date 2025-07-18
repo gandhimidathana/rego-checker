@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: flask-rego-app
+    env: docker
+    region: singapore
+    plan: free
