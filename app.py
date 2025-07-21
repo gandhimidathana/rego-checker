@@ -24,36 +24,25 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 progress_map = {}
 result_buffer_map = {}
 
-def get_driver(headless=True):
-    options = uc.ChromeOptions()
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-dev-shm-usage')
-    options.add_argument('--window-size=1920,1080')
-    options.add_argument('--disable-blink-features=AutomationControlled')
-    options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36')
-    if headless:
-        options.add_argument('--headless=new')
-    driver = uc.Chrome(options=options)
-    return driver
 
-def get_driver_nt(headless=True):
+def get_driver(headless=True):
     options = Options()
     options.add_argument("--start-maximized")
-    options.add_argument("--headless=new")
     options.add_argument("--window-size=1920,1080")
     options.add_argument("--disable-blink-features=AutomationControlled")
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36")
-    service = Service("chromedriver")
-    driver = uc.Chrome(headless=True)
-    driver = webdriver.Chrome(service=service, options=options)
+    if headless:
+        options.add_argument("--headless=new")
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option("useAutomationExtension", False)
+    service = Service("chromedriver")
+    driver = webdriver.Chrome(service=service, options=options)
     return driver
 
-def process_state(filepath, state):    
-    driver = get_driver_nt() if state == 'nt' else get_driver()
 
-   # driver = get_driver()
+def process_state(filepath, state):    
+    driver = get_driver()
+
     wait = WebDriverWait(driver, 20)
 
     with open(filepath, "r") as f:

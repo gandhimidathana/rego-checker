@@ -5,30 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Rego Checker</title>
   <link rel="stylesheet" href="/static/style.css" />
-  <style>
-    .spinner {
-      display: inline-block;
-      animation: spin 1s linear infinite;
-      margin-left: 8px;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-  </style>
 </head>
 <body>
   <div class="container">
-    <h1>🚗 Rego Checker</h1>
+    <h1>Rego Checker</h1>
     <form id="uploadForm" enctype="multipart/form-data">
       <label class="form-label">Select State:</label>
       <select name="state" required class="form-select">
         <option value="">-- Choose a state --</option>
-        <option value="nt">Northern Territory (NT)</option>
         <option value="qld">Queensland (QLD)</option>
         <option value="nsw">New South Wales (NSW)</option>
         <option value="wa">Western Australia (WA)</option>
         <option value="act">Australian Capital Territory (ACT)</option>
+        <option value="nt">Northern Territory (NT)</option>
+
       </select>
 
       <label class="form-label">Choose CSV file:</label>
@@ -53,7 +43,6 @@
       const formData = new FormData(form);
       document.activeElement.blur();
 
-      // Show loading state
       submitBtn.disabled = true;
       submitBtn.innerHTML = 'Processing... <span class="spinner">⏳</span>';
 
@@ -78,7 +67,6 @@
                 progressBar.textContent = "✅ Done";
                 progressBar.style.width = "100%";
 
-                // Auto-download CSV
                 fetch(`/download/${taskId}`)
                   .then(res => res.blob())
                   .then(blob => {

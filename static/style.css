@@ -1,0 +1,85 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 600px;
+  margin: 50px auto;
+  background: #fff;
+  padding: 30px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  border-radius: 12px;
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+}
+
+.form-label {
+  display: block;
+  margin: 15px 0 5px;
+  font-weight: bold;
+}
+
+.form-select,
+.form-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.btn-submit {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.btn-submit:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.progress-container {
+  margin-top: 20px;
+  background-color: #eee;
+  border-radius: 8px;
+  overflow: hidden;
+  height: 30px;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background-color: #17a2b8;
+  color: white;
+  text-align: center;
+  line-height: 30px;
+  transition: width 0.5s ease;
+}
+
+.spinner {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+  margin-left: 8px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.btn-submit {
+  display: block;
+  margin: 20px auto 0 auto; /* top: 20px, auto sides */
+}
