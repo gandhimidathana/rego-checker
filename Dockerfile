@@ -1,38 +1,66 @@
-# Use slim Python base
 FROM python:3.10-slim
 
-# Prevent prompts and enable real-time logging
 ENV DEBIAN_FRONTEND=noninteractive
-ENV PYTHONUNBUFFERED=1
 
-# Set environment variables for Chrome
-ENV CHROME_BIN=/usr/bin/chromium
-ENV CHROMEDRIVER_PATH=/usr/bin/chromedriver
-
-# Install system dependencies (added more for headless Chrome stability)
-RUN apt-get update && apt-get install -y \
-    wget curl unzip gnupg ca-certificates \
-    chromium chromium-driver \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    unzip \
+    wget \
+    gnupg \
+    ca-certificates \
     fonts-liberation \
-    libnss3 libgbm1 libasound2 libatk1.0-0 libatk-bridge2.0-0 \
-    libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 \
-    libgcc1 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 \
-    libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 \
-    libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 \
-    libxi6 libxrandr2 libxrender1 libxtst6 \
-    && rm -rf /var/lib/apt/lists/*  # Clean up in the same layer for smaller image
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libc6 \
+    libcairo2 \
+    libcups2 \
+    libdbus-1-3 \
+    libexpat1 \
+    libfontconfig1 \
+    libgcc1 \
+    libglib2.0-0 \
+    libgtk-3-0 \
+    libnspr4 \
+    libnss3 \
+    libpango-1.0-0 \
+    libx11-6 \
+    libx11-xcb1 \
+    libxcb1 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxext6 \
+    libxfixes3 \
+    libxrandr2 \
+    libxrender1 \
+    libxtst6 \
+    lsb-release \
+    xdg-utils \
+    && rm -rf /var/lib/apt/lists/*
 
-# Create app directory
+RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor > /etc/apt/trusted.gpg.d/google.gpg \
+ && echo "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/google.gpg] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google.list \
+ && apt-get update && apt-get install -y google-chrome-stable
+
+RUN CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+') && \
+    DRIVER_VERSION=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json" | \
+    python3 -c "import sys, json; print(json.load(sys.stdin)['channels']['Stable']['version'])") && \
+    wget -O /tmp/chromedriver.zip https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/${DRIVER_VERSION}/linux64/chromedriver-linux64.zip && \
+    unzip /tmp/chromedriver.zip -d /tmp/ && \
+    mv /tmp/chromedriver-linux64/chromedriver /usr/bin/chromedriver && \
+    chmod +x /usr/bin/chromedriver && \
+    rm -rf /tmp/chromedriver*
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV FLASK_APP=app.py
+
+COPY requirements.txt .
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
 WORKDIR /app
+COPY . /app
 
-# Copy app files
-COPY . .
-
-# Install Python packages
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Expose port (optional, Render uses $PORT anyway)
 EXPOSE 10000
 
-# Start with Gunicorn, use dynamic $PORT, increase timeout
-CMD ["gunicorn", "app:app", "--workers=1", "--timeout=600", "--bind=0.0.0.0:$PORT", "--log-level=debug"]
+CMD ["gunicorn", "--bind=0.0.0.0:10000", "--timeout=600", "app:app"]
