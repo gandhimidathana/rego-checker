@@ -1,11 +1,13 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
+  background-color: #ffffff;
   margin: 0;
   padding: 0;
 }
 
 .container {
+  flex: 1;
+  background-color: rgb(182, 180, 65);
   max-width: 600px;
   margin: 50px auto;
   background: #fff;
@@ -81,5 +83,59 @@ h1 {
 }
 .btn-submit {
   display: block;
-  margin: 20px auto 0 auto; /* top: 20px, auto sides */
+  margin: 20px auto 0 auto; 
+}
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #ddd;
+}
+
+.logo {
+  height: 80px;
+  width: 80px;
+}
+.title-block {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;  /* tighter vertical spacing */
+}
+
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 1rem;
+  color: #666;
+}
+html, body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  background-color: #f7f8f8fd;
+  padding: 90px;
+  margin: 0 auto;
+  max-width: 400px;
+  flex: 1;
+}
+.footer {
+  text-align: right;
+  padding: 16px 24px;
+  margin-top: 40px;
+  font-size: 0.9rem;
+  color: #888;
+  border-top: 1px solid #eee;
+  background-color: #11204b;
 }
