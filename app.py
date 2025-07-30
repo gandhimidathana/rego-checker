@@ -116,24 +116,23 @@ def process_single_rego(rego, state):
             time.sleep(3)
             try:
                 plate = driver.find_element(By.CSS_SELECTOR, "h2.heading-2").text.strip()
-                desc = driver.find_element(By.XPATH, "//p[contains(text(),'VIN/Chassis')]/preceding-sibling::p[1]").text.strip()
-                vin = driver.find_element(By.XPATH, "//p[contains(text(),'VIN/Chassis')]").text.split(":")[-1].strip()
-                expiry_el = driver.find_element(By.XPATH, "//strong[contains(text(),'Registration expires')]").text
-                expiry = expiry_el.replace("Registration expires:", "").strip()
             except:
                 plate = rego
-                desc = vin = expiry = "-"
+
             def get_info(label):
-                try:
+               try:
                     return driver.find_element(By.XPATH, f"//div[text()='{label}']/following-sibling::div[1]").text.strip()
-                except:
+               except:
                     return "-"
+
             output_row = [
-                plate, desc, vin, expiry,
+                plate,
                 get_info("Make"), get_info("Model"), get_info("Variant"),
                 get_info("Colour"), get_info("Shape"), get_info("Manufacture year"),
                 get_info("Tare weight"), get_info("Gross vehicle mass"),
-                get_info("Registration concession"), get_info("Condition codes")]
+                get_info("Registration concession"), get_info("Condition codes")
+          ]
+
 
         elif state == 'wa':
             driver.get("https://online.transport.wa.gov.au/webExternal/registration/?0")
@@ -177,7 +176,7 @@ def process_single_rego(rego, state):
             output_row = [rego] + ["-"] * 15
 
     except Exception:
-        columns_map = {'act': 14, 'qld': 5, 'nsw': 13, 'wa': 5, 'nt': 5}
+        columns_map = {'act': 14, 'qld': 5, 'nsw': 10, 'wa': 5, 'nt': 5}
         dash_count = columns_map.get(state, 15)
         output_row = [rego] + ["-"] * dash_count
        
@@ -214,7 +213,7 @@ def process_with_progress(filepath, state, task_id):
         buffer = io.StringIO()
         buffer.write(get_header(state))
 
-        max_workers = 2
+        max_workers = 6
 
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             results = executor.map(safe_process_single_rego, [(rego, state) for rego in regos])
