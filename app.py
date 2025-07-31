@@ -35,9 +35,14 @@ def get_driver(headless=True):
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36")
     if headless:
         options.add_argument("--headless=new")
+    options.add_argument("--no-sandbox")  # Important for containers
+    options.add_argument("--disable-dev-shm-usage")  # Important for containers
+    options.add_argument("--disable-gpu")  # Optional but recommended in headless containers
+    
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option("useAutomationExtension", False)
-    service = Service("chromedriver")  
+    
+    service = Service(os.environ.get('CHROMEDRIVER_PATH', 'chromedriver'))
     driver = webdriver.Chrome(service=service, options=options)
     return driver
 
@@ -189,7 +194,7 @@ def get_header(state):
     headers = {
         'act': "Plate Number,Make,Model,Colour,Manufacture Date,VIN,Engine Number,GVM,Tare Mass,Stolen VIN,CO2 Emissions,Stolen Plate,Stolen Engine,Reg Status,No. of Operators\n",
         'qld': "Registration Number,VIN,Description,Purpose,Status,Expiry\n",
-        'nsw': "Plate,Description,VIN,Expiry,Make,Model,Variant,Colour,Shape,Manufacture Year,Tare Weight,GVM,Concession,Condition Codes\n",
+        'nsw': "Plate,Make,Model,Variant,Colour,Shape,Manufacture Year,Tare Weight,GVM,Concession,Condition Codes\n",
         'wa': "Plate,Make,Model,Year,Colour,Expiry\n",
         'nt': "Input Rego,Plate,Status,Expiry,Make,Model\n"
     }
