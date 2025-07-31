@@ -218,7 +218,7 @@ def process_with_progress(filepath, state, task_id):
         buffer = io.StringIO()
         buffer.write(get_header(state))
 
-        max_workers = 6
+        max_workers = 2
 
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             results = executor.map(safe_process_single_rego, [(rego, state) for rego in regos])
