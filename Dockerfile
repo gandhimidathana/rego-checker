@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN chromium --version && chromedriver --version
 ENV CHROME_BIN=/usr/bin/chromium
-ENV PATH=$PATH:/usr/bin/chromium
+ENV PATH=$PATH:/usr/bin
 
 WORKDIR /app
 COPY . .
