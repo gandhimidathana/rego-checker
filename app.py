@@ -14,6 +14,7 @@ from selenium.webdriver.chrome.service import Service
 from concurrent.futures import ThreadPoolExecutor
 import traceback
 from datetime import datetime
+import shutil
 
 
 UPLOAD_FOLDER = 'uploads'
@@ -41,9 +42,12 @@ def get_driver(headless=True):
     
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option("useAutomationExtension", False)
-    
-    service = Service(os.environ.get('CHROMEDRIVER_PATH', 'chromedriver'))
+    chromedriver_path = shutil.which("chromedriver")
+    service = Service(chromedriver_path)
     driver = webdriver.Chrome(service=service, options=options)
+    
+    #service = Service(os.environ.get('CHROMEDRIVER_PATH', 'chromedriver'))
+    #driver = webdriver.Chrome(service=service, options=options)
     return driver
 
 def process_single_rego(rego, state):
